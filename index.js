@@ -20,6 +20,8 @@ function createStore (reducer) {
     const dispatch = (action) => {
         state = reducer(state, action);
         listeners.forEach((listener) => listener());
+        console.log("New state: ");
+        console.log(state);
     };
 
     return {
@@ -56,7 +58,7 @@ function toggleTodoAction(id){
     }
 }
 
-function addGoal(goal){
+function addGoalAction(goal){
     return{
         type: ADD_GOAL,
         goal,
@@ -98,6 +100,10 @@ function goals (state = [], action) {
     }
 }
 
+function generateId () {
+    return Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
+}
+
 function app (state = {}, action){
     return {
         todos: todos(state.todos, action),
@@ -106,11 +112,43 @@ function app (state = {}, action){
 }
 
 const store = createStore(app);
-store.dispatch(addTodoAction({
-    id: 0,
-    name: 'Walk the dog',
-    complete: false
-}));
+
+// DOM code
+
+function addTodo(){
+    const input = document.getElementById('todo');
+    const name = input.value;
+    input.value = '';
+    store.dispatch(addTodoAction({
+        id: generateId(),
+        name: name,
+        complete: false,
+    }));
+}
+
+function addGoal(){
+    const input = document.getElementById('goal');
+    const name = input.value;
+    input.value = '';
+    store.dispatch(addGoalAction({
+        id: generateId(),
+        name: name,
+    }));
+}
+
+document.getElementById('todoBtn').addEventListener('click', addTodo);
+document.getElementById('goalBtn').addEventListener('click', addGoal);
+
+
+
+
+
+
+
+
+
+
+
 
 
 //
