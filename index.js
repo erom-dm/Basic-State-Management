@@ -65,7 +65,7 @@ function addGoalAction(goal){
     }
 }
 
-function returnGoal(id){
+function removeGoalAction(id){
     return{
         type: REMOVE_GOAL,
         id,
@@ -111,9 +111,68 @@ function app (state = {}, action){
     }
 }
 
+// <<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>
 const store = createStore(app);
 
+
+
+store.subscribe(() => {
+    const {goals, todos} = store.getState();
+
+    document.getElementById('goals').innerHTML = '';
+    document.getElementById('todos').innerHTML = '';
+
+    goals.forEach(addGoalToDOM);
+    todos.forEach(addTodoToDOM);
+});
+
+// <<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>
+
+
+
 // DOM code
+
+function addTodoToDOM(todo) {
+    const node = document.createElement('li');
+    const text = document.createTextNode(todo.name);
+
+    const removeBtn = createRemoveButton(() => {
+       store.dispatch(removeTodoAction(todo.id))
+    });
+
+    node.appendChild(text);
+    node.appendChild(removeBtn);
+    node.style.textDecoration = todo.complete ? 'line-through' : 'none';
+    node.addEventListener('click', () => {
+        store.dispatch(toggleTodoAction(todo.id))
+    });
+
+    document.getElementById('todos').appendChild(node)
+}
+
+function addGoalToDOM(goal) {
+    const node = document.createElement('li');
+    const text = document.createTextNode(goal.name);
+
+    const removeBtn = createRemoveButton(() => {
+        store.dispatch(removeGoalAction(goal.id))
+    });
+
+    node.appendChild(text);
+    node.appendChild(removeBtn);
+
+    document.getElementById('goals').appendChild(node);
+}
+
+function createRemoveButton (onclick){
+    const removeBtn = document.createElement('button');
+    removeBtn.innerHTML = 'X';
+    removeBtn.addEventListener('click', onclick);
+
+    return removeBtn;
+}
+
+
 
 function addTodo(){
     const input = document.getElementById('todo');
@@ -147,48 +206,3 @@ document.getElementById('goalBtn').addEventListener('click', addGoal);
 
 
 
-
-
-
-
-//
-//
-// {
-//     type: 'ADD_TODO',
-//     todo: {
-//         id: 0,
-//         name: 'Learn Redux',
-//         complete: false,
-//     }
-// }
-//
-// {
-//     type: 'REMOVE_TODO',
-//     id: 0,
-// }
-//
-// {
-//     type: 'TOGGLE_TODO',
-//     id: 0,
-// }
-//
-// {
-//     type: 'ADD_GOAL',
-//     goal: {
-//         id: 0,
-//         name: 'Run a Marathon'
-//     }
-// }
-//
-// {
-//     type: 'REMOVE_GOAL',
-//     id: 0
-// }
-
-
-
-
-// let store = createStore()
-// store.subscribe(cb)
-// cb is passed to listeners
-// returns
