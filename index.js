@@ -1,4 +1,4 @@
-function createStore (reducer) {
+/*function createStore (reducer) {
     // The store should have four parts
     // 1. The state
     // 2. Get the state.
@@ -29,7 +29,7 @@ function createStore (reducer) {
         subscribe,
         dispatch,
     }
-}
+}*/
 
 const ADD_TODO = 'ADD_TODO';
 const REMOVE_TODO = 'REMOVE_TODO';
@@ -73,6 +73,45 @@ function removeGoalAction(id){
 }
 
 
+/*function checkAndDispatch (store, action) {
+    if (
+        action.type === ADD_TODO &&
+        action.todo.name.toLowerCase().indexOf('bitcoin') !== -1
+    ) {
+        return alert('Nope. Bad idea')
+    }
+
+    if (
+        action.type === ADD_GOAL &&
+        action.goal.name.toLowerCase().indexOf('bitcoin') !== -1
+    ) {
+        return alert('Nope. Bad idea')
+    }
+
+    return store.dispatch(action);
+}*/
+
+const checker = (store) => (next) => (action) => {
+    if (
+        action.type === ADD_TODO &&
+        action.todo.name.toLowerCase().indexOf('bitcoin') !== -1
+    ) {
+        return alert('Nope. Bad idea')
+    }
+
+    if (
+        action.type === ADD_GOAL &&
+        action.goal.name.toLowerCase().indexOf('bitcoin') !== -1
+    ) {
+        return alert('Nope. Bad idea')
+    }
+
+    return next(action);
+};
+
+
+
+
 function todos (state = [], action) {
     switch(action.type){
         case ADD_TODO:
@@ -104,15 +143,18 @@ function generateId () {
     return Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
 }
 
-function app (state = {}, action){
+/*function app (state = {}, action){
     return {
         todos: todos(state.todos, action),
         goals: goals(state.goals, action),
     }
-}
+}*/
 
 // <<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>
-const store = createStore(app);
+const store = Redux.createStore(Redux.combineReducers({
+    todos,
+    goals,
+}), Redux.applyMiddleware(checker));
 
 
 
@@ -137,14 +179,14 @@ function addTodoToDOM(todo) {
     const text = document.createTextNode(todo.name);
 
     const removeBtn = createRemoveButton(() => {
-       store.dispatch(removeTodoAction(todo.id))
+       store.dispatch( removeTodoAction(todo.id))
     });
 
     node.appendChild(text);
     node.appendChild(removeBtn);
     node.style.textDecoration = todo.complete ? 'line-through' : 'none';
     node.addEventListener('click', () => {
-        store.dispatch(toggleTodoAction(todo.id))
+        store.dispatch( toggleTodoAction(todo.id))
     });
 
     document.getElementById('todos').appendChild(node)
@@ -155,7 +197,7 @@ function addGoalToDOM(goal) {
     const text = document.createTextNode(goal.name);
 
     const removeBtn = createRemoveButton(() => {
-        store.dispatch(removeGoalAction(goal.id))
+        store.dispatch( removeGoalAction(goal.id))
     });
 
     node.appendChild(text);
@@ -178,7 +220,7 @@ function addTodo(){
     const input = document.getElementById('todo');
     const name = input.value;
     input.value = '';
-    store.dispatch(addTodoAction({
+    store.dispatch( addTodoAction({
         id: generateId(),
         name: name,
         complete: false,
@@ -189,7 +231,7 @@ function addGoal(){
     const input = document.getElementById('goal');
     const name = input.value;
     input.value = '';
-    store.dispatch(addGoalAction({
+    store.dispatch( addGoalAction({
         id: generateId(),
         name: name,
     }));
